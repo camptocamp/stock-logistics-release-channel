@@ -4,12 +4,33 @@
 
 from operator import itemgetter
 
+import pytz
+
 from odoo import models
 from odoo.tools import groupby
 
 
 class StockMove(models.Model):
     _inherit = "stock.move"
+
+    def _release_set_expected_date(self, new_expected_date=False):
+        # Before changing the date, if there is no channel, record old date as
+        # delivery date
+        for picking in self.picking_id:
+            channel = picking.release_channel_id
+            if not channel or channel.state == "asleep":
+                if not picking.delivery_date:
+                    delivery_date = picking.scheduled_date
+                    wh_tz = pytz.timezone(
+                        picking.picking_type_id.warehouse_id.partner_id.tz
+                        or self.env.company.partner_id.tz
+                        or "UTC"
+                    )
+                    delivery_date_tz = delivery_date.astimezone(pytz.utc).astimezone(
+                        wh_tz
+                    )
+                    picking.delivery_date = delivery_date_tz.date()
+        return super()._release_set_expected_date(new_expected_date=new_expected_date)
 
     def release_available_to_promise(self):
         # after releasing, we re-assign a release channel,
