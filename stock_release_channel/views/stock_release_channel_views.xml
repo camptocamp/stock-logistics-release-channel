@@ -23,6 +23,22 @@
                         invisible="not is_action_unlock_allowed"
                     />
                     <button
+                        name="action_collect_restart"
+                        string="Restart Collecting"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-hourglass-start"
+                        invisible="not is_action_collect_restart_allowed"
+                    />
+                    <button
+                        name="action_collect_stop"
+                        string="Stop Collecting"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-stop-circle"
+                        invisible="not is_action_collect_stop_allowed"
+                    />
+                    <button
                         name="action_sleep"
                         string="Sleep"
                         type="object"
